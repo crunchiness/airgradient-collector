@@ -65,30 +65,24 @@ Follow logs:
 podman logs -f airgradient-collector
 ```
 
-## Deploying on Coolify
+## Self-hosting
 
-The database is deployed separately. Only the collector app is deployed here.
+The collector is a single Docker container with no exposed ports. It connects to any PostgreSQL instance you point it at via environment variables. You can run it on any Docker-capable host — a VPS, a home server, Coolify, Portainer, Dokku, or a plain `docker run`.
 
-### 1. Deploy PostgreSQL
+### Deploying the container
 
-Add a new PostgreSQL 17 resource in Coolify and note the internal hostname, port, database name, user, and password it provides.
+Build and push the image to a registry, or point your host at this repository to build from the Dockerfile directly. Then set the following environment variables:
 
-### 2. Deploy the collector
+| Variable      | Value                          |
+|---------------|--------------------------------|
+| `API_KEY`     | Your AirGradient API key       |
+| `DB_HOST`     | PostgreSQL hostname            |
+| `DB_PORT`     | `5432`                         |
+| `DB_NAME`     | Database name                  |
+| `DB_USER`     | Database user                  |
+| `DB_PASSWORD` | Database password              |
 
-- Add a new resource → **Docker image** or **Dockerfile** (point at this repo).
-- Set the following environment variables in Coolify's UI:
-
-| Variable      | Value                                  |
-|---------------|----------------------------------------|
-| `API_KEY`     | Your AirGradient API key               |
-| `DB_HOST`     | Internal hostname of your Coolify DB   |
-| `DB_PORT`     | `5432`                                 |
-| `DB_NAME`     | Database name from Coolify             |
-| `DB_USER`     | Database user from Coolify             |
-| `DB_PASSWORD` | Database password from Coolify         |
-
-- The collector has no exposed ports, so disable port binding.
-- Deploy.
+The container has no exposed ports — disable port binding if your platform requires it.
 
 ## Schema
 
@@ -103,6 +97,7 @@ The collector creates the `measurements` table automatically on startup:
 | `pm02`       | double precision | PM2.5 µg/m³            |
 | `pm10`       | double precision | PM10 µg/m³             |
 | `rco2`       | integer          | CO₂ ppm                |
+| `tvoc`       | double precision | TVOC raw value         |
 | `tvoc_index` | integer          | TVOC index             |
 | `nox_index`  | integer          | NOx index              |
 | `atmp`       | double precision | Temperature °C         |
