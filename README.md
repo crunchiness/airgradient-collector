@@ -1,8 +1,12 @@
 # airgradient-collector
 
-Polls the AirGradient cloud API every minute and stores measurements in PostgreSQL.
+A self-hosted collector for [AirGradient](https://www.airgradient.com/) air quality sensors written in Haskell (why not?). It polls the AirGradient cloud API every minute and stores measurements in your own PostgreSQL database.
+
+AirGradient's dashboard only provides granular historical data for the past 6 months without a paid subscription. Running this collector gives you full, permanent access to your own data — query it however you like, keep it as long as you want.
 
 ## Configuration
+
+Your API key can be found in the [AirGradient dashboard](https://app.airgradient.com/settings/place?tab=2) under General Settings → Connectivity.
 
 Copy `.env.example` to `.env` and fill in your values:
 
@@ -17,15 +21,28 @@ DB_NAME=airgradient
 DB_USER=postgres
 ```
 
-## Running locally with Podman
+## Running locally
 
-### With podman-compose
+The examples below use Podman, but Docker works identically — just replace `podman` with `docker`.
+
+### With dev.sh (Podman only)
+
+The included `dev.sh` script is the quickest way to get started:
+
+```bash
+./dev.sh          # build and start everything, logs → logs/dev.log
+./dev.sh restart  # rebuild and restart the collector
+./dev.sh logs     # tail logs/dev.log
+./dev.sh stop     # stop everything
+```
+
+### With podman-compose / docker-compose
 
 ```bash
 podman-compose up --build
 ```
 
-### Without podman-compose
+### Without compose
 
 Build the image:
 
