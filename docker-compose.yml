@@ -1,0 +1,31 @@
+services:
+  collector:
+    build: .
+    env_file: .env
+    environment:
+      DB_HOST: postgres
+      DB_NAME: airgradient
+      DB_USER: postgres
+      DB_PASSWORD: ${DB_PASSWORD}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  postgres:
+    image: docker.io/library/postgres:17
+    environment:
+      POSTGRES_DB: airgradient
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
